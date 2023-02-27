@@ -1,0 +1,12 @@
+- model: inventory.store
+  pk: 1
+  fields:
+    name: NewEgg
+    address: ''
+    phone: ''
+- model: inventory.store
+  pk: 2
+  fields:
+    name: Amazon
+    address: ''
+    phone: ''

@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "sith"
+version = "0.1.0"
+description = ""
+authors = ["Alexey <mr.swasher@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.6.5"
+django = "1.9.5"
+django-mptt = "0.8.3"
+pyyaml = "3.11"
+cloudinary = "1.5.0"
+html5lib = "0.999999999"
+psycopg2 = "^2.6.1"
+selenium = "^2.53.6"
+python-decouple = "^3.7"
+django-debug-toolbar = "1.5"
+lxml = { file = "whl/lxml-4.6.2-cp36-cp36m-win_amd64.whl" }
+django-hstore = "1.4.2"
+currencylayer = {git = "https://github.com/Said007/currencylayer"}
+beautifulsoup4 = "4.5.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

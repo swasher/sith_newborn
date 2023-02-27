@@ -1,0 +1,155 @@
+{% comment %}
+Derived from django/contrib/admin/templates/admin/edit_inline/tabular.html
+Used in class ImagesAdminInline(admin.TabularInline) in admin.py
+{% endcomment %}
+
+{% load i18n admin_urls admin_static admin_modify %}
+
+<div class="inline-group" id="{{ inline_admin_formset.formset.prefix }}-group">
+  <div class="tabular inline-related {% if forloop.last %}last-related{% endif %}">
+    {{ inline_admin_formset.formset.management_form }}
+    <fieldset class="module">
+      <h2>{{ inline_admin_formset.opts.verbose_name_plural|capfirst }}</h2>
+      {{ inline_admin_formset.formset.non_form_errors }}
+
+      <table>
+
+        {% comment %} <!-- ШАПКА таблицы, в виде первой строки над строками инлайна - не нужна -->
+        <thead><tr>
+        {% for field in inline_admin_formset.fields %}
+         {% if not field.widget.is_hidden %}
+           <th{% if forloop.first %} colspan="2"{% endif %}{% if field.required %} class="required"{% endif %}>{{ field.label|capfirst }}
+           {% if field.help_text %}&nbsp;<img src="{% static "admin/img/icon-unknown.svg" %}" class="help help-tooltip" width="10" height="10" alt="({{ field.help_text|striptags }})" title="{{ field.help_text|striptags }}" />{% endif %}
+           </th>
+         {% endif %}
+        {% endfor %}
+        {% if inline_admin_formset.formset.can_delete %}<th>{% trans "Delete?" %}</th>{% endif %}
+        </tr></thead>
+        {% endcomment %}
+
+        <tbody>
+
+          <!--Это обработчик ошибок таблицы (non-field)  -->
+          {% if inline_admin_form.form.non_field_errors %}
+          <tr>
+            <td colspan="{{ inline_admin_form|cell_count }}">{{ inline_admin_form.form.non_field_errors }}
+            </td>
+          </tr>
+          {% endif %}
+
+          <tr>
+            {% for inline_admin_form in inline_admin_formset %}
+
+               <td class="form-row  {% if inline_admin_form.original or inline_admin_form.show_url %}has_original{% endif %}{% if forloop.last %} empty-form{% endif %}"
+                    id="{{ inline_admin_formset.formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
+
+
+                   {% comment %}
+                   {# Этот блок отображает название объекта (inline_admin_form.original), ссылку на страницу его изменения (admin_urlname:'change'), и inline_admin_form.absolute_url #}
+                   {% if inline_admin_form.original or inline_admin_form.show_url %}<p>
+
+                     {% if inline_admin_form.original %}
+                       {{ inline_admin_form.original }}
+                       {% if inline_admin_form.model_admin.show_change_link and inline_admin_form.model_admin.has_registered_model %}
+                         <a href="{% url inline_admin_form.model_admin.opts|admin_urlname:'change' inline_admin_form.original.pk|admin_urlquote %}" class="inlinechangelink">{% trans "Change" %}</a>
+                       {% endif %}
+                     {% endif %}
+
+                     {% if inline_admin_form.show_url %}<a href="{{ inline_admin_form.absolute_url }}">{% trans "View on site" %}</a>
+                     {% endif %}
+
+                     </p>
+                   {% endif %}
+                   {% endcomment %}
+
+                   {# Этот блок я не понял, что делает #}
+                   {% if inline_admin_form.needs_explicit_pk_field %}{{ inline_admin_form.pk_field.field }}
+                   {% endif %}
+
+                   {# Этот блок я не понял, что делает #}
+                   {{ inline_admin_form.fk_field.field }}
+                   {% spaceless %}
+
+                   {# Этот блок, собственно, отображает поля #}
+                   {% for fieldset in inline_admin_form %}
+                     {% for line in fieldset %}
+                       {% for field in line %}
+                         {% if field.field.is_hidden %} {{ field.field }} {% endif %}
+                       {% endfor %}
+                     {% endfor %}
+                   {% endfor %}
+                   {% endspaceless %}
+
+                   {% comment %}
+                   {# Отображение надписи над картинкой, которую возвращаем class Image.__str__ #}
+                   {# Можно вывести что-нибудь другое #}
+                   <div class="image-header">
+                     {% if inline_admin_form.original %}
+                       {{ inline_admin_form.original }}
+                     {% endif %}
+                   </div>
+                   {% endcomment %}
+
+                   {% for fieldset in inline_admin_form %}
+                     {% for line in fieldset %}
+                       {% for field in line %}
+
+                         {% if not field.field.is_hidden %}
+
+                           {% comment %} deprecated - был элемент с классом по имени поля БД: "class="field-picture"
+                           {% if field.field.name %} "class="field-{{ field.field.name }}"
+                           {% endif %}>
+                           {% endcomment %}
+
+
+                           {% if field.is_readonly %}
+                             <p>{{ field.contents }}</p>
+                           {% else %}
+                             {{ field.field.errors.as_ul }}
+                             <!-- картинка и другие поля-->
+                             {{ field.field }}
+                           {% endif %}
+                         {% endif %}
+                       {% endfor %}
+                     {% endfor %}
+
+                     {#  Отображение галочки удаления картинки  #}
+                     {% if inline_admin_formset.formset.can_delete %}
+                       <div class="delete">
+                         {% if inline_admin_form.original %}{% trans "Delete?" %} {{ inline_admin_form.deletion_field.field }}
+                         {% endif %}
+                       </div>
+                     {% endif %}
+
+                   {% endfor %}
+
+               </td>
+
+            {% endfor %}
+          </tr>
+        </tbody>
+      </table>
+    </fieldset>
+  </div>
+</div>
+
+<script type="text/javascript">
+
+(function($) {
+  $("#{{ inline_admin_formset.formset.prefix|escapejs }}-group .tabular.inline-related tbody").tabularFormset({
+    prefix: "{{ inline_admin_formset.formset.prefix|escapejs }}",
+    addText: "{% filter escapejs %}{% blocktrans with inline_admin_formset.opts.verbose_name|capfirst as verbose_name %}Add another {{ verbose_name }}{% endblocktrans %}{% endfilter %}",
+    deleteText: "{% filter escapejs %}{% trans 'Remove' %}{% endfilter %}"
+  });
+})(django.jQuery);
+</script>
+
+{% comment %}
+(function($) {
+  $("#image_set-group .tabular.inline-related tbody tr").tabularFormset({
+    prefix: "image_set",
+    addText: "Добавить еще один Image",
+    deleteText: "Удалить"
+  });
+})(django.jQuery);
+{% endcomment %}

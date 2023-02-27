@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/html">
+<head>
+    {% load static %}
+    {% load admin_urls %}
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+    {% comment %} OLD
+    <script src="{% static "jquery/dist/jquery.min.js" %}"></script>{% endcomment %}
+    {#  NEW #}
+    <script src="https://code.jquery.com/jquery-2.2.4.js" integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI=" crossorigin="anonymous"></script>
+
+
+    {% comment %} OLD
+    <script src="{% static "bootstrap/dist/js/bootstrap.min.js" %}"></script>
+    <link href="{% static "bootstrap/dist/css/bootstrap.min.css" %}" rel="stylesheet">
+    {# <link rel="stylesheet" href="{% static "bootstrap/dist/css/bootstrap-theme.min.css" %}">#}
+    {% endcomment %}
+    {#  NEW #}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+{#    <link href="{% static "bootstrap-select/dist/css/bootstrap-select.min.css" %}" rel="stylesheet">#}
+{#    <script src="{% static "bootstrap-select/dist/js/bootstrap-select.min.js" %}"></script>#}
+
+    {% comment %} OLD
+    <link href="{% static "datatables.net-bs/css/dataTables.bootstrap.min.css" %}" rel="stylesheet">
+    <script src="{% static "datatables.net/js/jquery.dataTables.min.js" %}"></script>
+    <script src="{% static "datatables.net-bs/js/dataTables.bootstrap.min.js" %}"></script>
+    {% endcomment %}
+    {#  NEW #}
+    <link href="https://cdn.datatables.net/v/dt/jq-3.6.0/dt-1.13.2/datatables.min.css"/>
+    <script src="https://cdn.datatables.net/v/dt/jq-3.6.0/dt-1.13.2/datatables.min.js"></script>
+
+
+{#    <script src="{% static "bootstrap-confirmation2/bootstrap-confirmation.min.js" %}"></script>#}
+
+{#    <script src="{% static "moment/min/moment-with-locales.min.js" %}"></script>#}
+{#    <script src="{% static "eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js" %}"></script>#}
+{#    <link href="{% static "eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" %}" rel="stylesheet">#}
+
+{#    <script src="{% static "csfr_ajax.js" %}"></script>#}
+    <script src="{% static "inventory.js" %}"></script>
+    <link href="{% static "inventory.css" %}" rel="stylesheet">
+
+    <title>SITH</title>
+    {% block head %}  {% endblock %}
+
+</head>
+
+<body>
+<nav class="navbar navbar-default" role="navigation">
+
+    <div class="container-fluid">
+
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="" class="btn navbar-btn btn-success" role="button">SITH</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse">
+
+
+
+
+            {% csrf_token %}
+            {% if user.is_authenticated %}
+                <div class="navbar-form navbar-right btn-group">
+                    <a href="{% url 'admin:index' %}" class="btn btn-default" role="button"><span class="glyphicon glyphicon-wrench"></span>Admin</a>
+                    <button type="button" class="btn btn-info"><span class="glyphicon glyphicon-user"></span> User '{{ user.username }}' is authenticated.</button>
+                    <a href="{% url 'logout' %}?next=/" class="btn btn-default" role="button"><span class="glyphicon glyphicon-log-in"></span> Logout</a>
+                </div>
+
+                <div class="navbar-text pull-right">
+                    <a href="#" class="label" id="import"></a>
+                </div>
+            {% else %}
+                <form name='AuthenticationForm' method="post" action="{% url 'login' %}" class="navbar-form navbar-right" role="form" >
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label class="sr-only" for="exampleInputUsername2">Login</label>
+                        <input type="text" class="form-control" id="exampleInputUsername2" placeholder="Username" name="username">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="sr-only" for="exampleInputPassword2">Password</label>
+                        <input type="password" class="form-control" id="exampleInputPassword2" placeholder="Password" name="password">
+                    </div>
+
+                    <button type="submit" class="btn btn-default">
+                        <span class="glyphicon glyphicon-log-in"></span>
+                        <i class="icon-user icon-white"></i> Log in
+                    </button>
+                </form>
+
+            {% endif %}
+
+            {% comment %}
+            <ul class="nav navbar-nav navbar-right">
+            <li><a href="#">Link3</a></li>
+            </ul>{% endcomment %}
+
+        </div>
+    </div>
+</nav>
+
+{% if messages %}
+    <div class="container-fluid">
+        <ul class="messages">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}" role="alert"> {{ message }} </div>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+{% block body %}  {% endblock %}
+
+</body>
+
+</html>

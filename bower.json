@@ -1,0 +1,25 @@
+{
+  "name": "sith",
+  "description": "",
+  "main": "",
+  "moduleType": [
+    "amd"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^2.2.1",
+    "bootstrap": "^3.3.6",
+    "bootstrap-confirmation2": "^2.2.0",
+    "datatables.net": "^1.10.11",
+    "datatables.net-bs": "^1.10.11"
+  }
+}

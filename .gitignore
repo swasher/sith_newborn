@@ -1,0 +1,25 @@
+# Приватные файлы
+usefull_info.md
+/test
+latest.heroku.dump
+.env
+
+# Файлы, создаваемые приложением
+*.pyc
+*.log
+*.retry
+__pycache__/
+.idea/
+.vagrant/
+
+# Статика
+test/*
+static/**
+bower_components
+/media
+/collect_static
+/whl/
+
+
+
+

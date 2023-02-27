@@ -1,0 +1,77 @@
+- model: inventory.container
+  pk: 1
+  fields:
+    name: Офис
+    kind: ORG
+    notice: ''
+    parent: null
+    lft: 1
+    rght: 6
+    tree_id: 2
+    level: 0
+- model: inventory.container
+  pk: 2
+  fields:
+    name: Серверная
+    kind: ROOM
+    notice: ''
+    parent: 1
+    lft: 2
+    rght: 5
+    tree_id: 2
+    level: 1
+- model: inventory.container
+  pk: 3
+  fields:
+    name: Дом
+    kind: ORG
+    notice: ''
+    parent: null
+    lft: 1
+    rght: 6
+    tree_id: 1
+    level: 0
+- model: inventory.container
+  pk: 4
+  fields:
+    name: Балкон
+    kind: ROOM
+    notice: ''
+    parent: 3
+    lft: 2
+    rght: 5
+    tree_id: 1
+    level: 1
+- model: inventory.container
+  pk: 5
+  fields:
+    name: ALEXEY on Intel Core i7 4770 with 16 GB
+    kind: PC
+    notice: ''
+    parent: 2
+    lft: 3
+    rght: 4
+    tree_id: 2
+    level: 2
+- model: inventory.container
+  pk: 7
+  fields:
+    name: New computer, added 2016-05-13 17:43:55
+    kind: PC
+    notice: ''
+    parent: 4
+    lft: 3
+    rght: 4
+    tree_id: 1
+    level: 2
+- model: inventory.container
+  pk: 8
+  fields:
+    name: DAD on xxx with 16 GB
+    kind: PC
+    notice: ''
+    parent: null
+    lft: 1
+    rght: 2
+    tree_id: 3
+    level: 0

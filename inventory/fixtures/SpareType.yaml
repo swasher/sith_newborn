@@ -1,0 +1,135 @@
+- model: inventory.sparetype
+  pk: 1
+  fields:
+    name: monitor
+    name_verbose: Монитор
+- model: inventory.sparetype
+  pk: 2
+  fields:
+    name: cpu
+    name_verbose: Центральный процессор
+- model: inventory.sparetype
+  pk: 3
+  fields:
+    name: motherboard
+    name_verbose: Материнская плата
+- model: inventory.sparetype
+  pk: 4
+  fields:
+    name: memory
+    name_verbose: Оперативная память
+- model: inventory.sparetype
+  pk: 5
+  fields:
+    name: videocard
+    name_verbose: Видеокарта
+- model: inventory.sparetype
+  pk: 6
+  fields:
+    name: storage
+    name_verbose: Устройство хранения
+- model: inventory.sparetype
+  pk: 7
+  fields:
+    name: cdrom
+    name_verbose: Оптический привод
+- model: inventory.property
+  pk: 1
+  fields:
+    name: Name
+    sparetype: 2
+- model: inventory.property
+  pk: 2
+  fields:
+    name: Cores
+    sparetype: 2
+- model: inventory.property
+  pk: 3
+  fields:
+    name: Codename
+    sparetype: 2
+- model: inventory.property
+  pk: 4
+  fields:
+    name: Package
+    sparetype: 2
+- model: inventory.property
+  pk: 5
+  fields:
+    name: Technology
+    sparetype: 2
+- model: inventory.property
+  pk: 6
+  fields:
+    name: Stock_core_speed
+    sparetype: 2
+- model: inventory.property
+  pk: 7
+  fields:
+    name: Socket
+    sparetype: 2
+- model: inventory.property
+  pk: 8
+  fields:
+    name: Manufacturer
+    sparetype: 3
+- model: inventory.property
+  pk: 9
+  fields:
+    name: Model
+    sparetype: 3
+- model: inventory.property
+  pk: 10
+  fields:
+    name: Chipset_vendor
+    sparetype: 3
+- model: inventory.property
+  pk: 11
+  fields:
+    name: Chipset_model
+    sparetype: 3
+- model: inventory.property
+  pk: 12
+  fields:
+    name: Ram_type
+    sparetype: 3
+- model: inventory.property
+  pk: 13
+  fields:
+    name: Rram_slots
+    sparetype: 3
+- model: inventory.property
+  pk: 14
+  fields:
+    name: Socket
+    sparetype: 3
+- model: inventory.property
+  pk: 15
+  fields:
+    name: Type
+    sparetype: 4
+- model: inventory.property
+  pk: 16
+  fields:
+    name: Size
+    sparetype: 4
+- model: inventory.property
+  pk: 17
+  fields:
+    name: Munufacturer
+    sparetype: 4
+- model: inventory.property
+  pk: 18
+  fields:
+    name: Week-year
+    sparetype: 4
+- model: inventory.property
+  pk: 19
+  fields:
+    name: Model
+    sparetype: 1
+- model: inventory.property
+  pk: 20
+  fields:
+    name: Native_resolution
+    sparetype: 1

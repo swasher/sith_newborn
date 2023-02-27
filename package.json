@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "bower": "latest",
+    "devDependencies": {
+      "phantomjs": "^2.1.7"
+    }
+  }
+}

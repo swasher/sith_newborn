@@ -1,0 +1,67 @@
+.inline-related h3{
+    /*position: relative;*/
+    background: yellowgreen;
+}
+
+/*
+div .delete {
+    background: #f5ff91;
+}
+*/
+
+/*
+td.has_original{
+    !*overflow: hidden;*!
+    padding: 10px;
+    font-size: 13px;
+    border-bottom: 1px solid #eee;
+    background: darkseagreen;
+    column-width: 200px;
+}
+*/
+
+/*table {
+    border: 1px solid #399;
+    border-spacing: 10px;
+}*/
+
+/*
+td.original {
+    visibility: collapse;
+}
+*/
+
+.form-row.dynamic-image_set {
+    background: #79aec8;
+    display: block;
+}
+
+td.form-row.has_original {
+    border: 2px solid whitesmoke;
+    float: left;
+    background: #eee;
+    width: 150px;
+    /*display: inline;*/
+}
+
+.cloudinary-image {
+    /*background: yellow;*/
+}
+
+.inline-related.tabular fieldset.module table {
+    width: auto;
+}
+
+/*
+Заголовок перед картинкой
+.inline-group .tabular td.original p {
+    position: absolute;
+    left: 0;
+    height: 1.1em;
+    padding: 2px 9px;
+    overflow: hidden;
+    font-size: 19px;
+    font-weight: bold;
+    color: #666;
+    _width: 700px;
+}*/
