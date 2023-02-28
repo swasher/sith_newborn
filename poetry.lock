@@ -161,6 +161,18 @@ genshi = ["genshi"]
 lxml = ["lxml"]
 
 [[package]]
+name = "humanfriendly"
+version = "2.1"
+description = "Human friendly output for text interfaces using Python"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "humanfriendly-2.1-py2.py3-none-any.whl", hash = "sha256:97c486e94841dfc78dcac98566c6d3217e0793f05d48c91a4aa70bda2ccb662d"},
+    {file = "humanfriendly-2.1.tar.gz", hash = "sha256:ecbbb27444b3151a1d2e4366af938151597bdfe1a9d645595804df34e3e8c6ac"},
+]
+
+[[package]]
 name = "idna"
 version = "3.4"
 description = "Internationalized Domain Names in Applications (IDNA)"
@@ -226,6 +238,20 @@ python-versions = "*"
 files = [
     {file = "python-decouple-3.7.tar.gz", hash = "sha256:e88a8d6bdf3b07d471a854099e455e20a6fa7a4d6ecf8631b250e3db654336e6"},
     {file = "python_decouple-3.7-py3-none-any.whl", hash = "sha256:1596dad2670cca5b1f87d087d9adb6a1958c590df346b85d4b19a9d6f0d52cef"},
+]
+
+[[package]]
+name = "pytz"
+version = "2016.7"
+description = "World timezone definitions, modern and historical"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pytz-2016.7-py2.py3-none-any.whl", hash = "sha256:c6fe748ed6c676d9404b47897cfb399c514fb7428298465c8a3310ee5a2a0ec9"},
+    {file = "pytz-2016.7.tar.bz2", hash = "sha256:6eab31709e3a4aea748457707da45e805b650cbb352583805d2417de2a1dd71e"},
+    {file = "pytz-2016.7.tar.gz", hash = "sha256:8787de03f35f31699bcaf127e56ad14c00647965ed24d72dbaca87c6e4f843a3"},
+    {file = "pytz-2016.7.zip", hash = "sha256:054d9814d00254571cff84f6faedb25c046008322cbe51a6d5664c912b4f2929"},
 ]
 
 [[package]]
@@ -346,4 +372,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "3.6.5"
-content-hash = "95c28dbaeffeccd0caf046e23449060f6658b098bd1625caddda6a0f8c5f46a7"
+content-hash = "0479e53928f2b2dfd7866aaf6a233328061dda2ebd8682bd8fa3d5ce1972df0f"

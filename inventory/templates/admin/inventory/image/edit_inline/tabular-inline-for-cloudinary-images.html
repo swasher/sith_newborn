@@ -141,7 +141,17 @@ Used in class ImagesAdminInline(admin.TabularInline) in admin.py
     addText: "{% filter escapejs %}{% blocktrans with inline_admin_formset.opts.verbose_name|capfirst as verbose_name %}Add another {{ verbose_name }}{% endblocktrans %}{% endfilter %}",
     deleteText: "{% filter escapejs %}{% trans 'Remove' %}{% endfilter %}"
   });
+
 })(django.jQuery);
+
+$(document).ready(function() {
+    $('.tooltip').tooltipster({
+      theme: 'tooltipster-light',
+      delay: 50,
+      animationDuration: 100,
+      contentAsHTML: true
+    });
+});
 </script>
 
 {% comment %}

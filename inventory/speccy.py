@@ -1,7 +1,6 @@
 from lxml import etree
 import re
-from .utils import capacity_to_human
-from .utils import bytes_to_human
+from .utils import bytes_to_human, human_to_bytes
 
 def parse_speccy(speccy_xml):
 
@@ -18,12 +17,14 @@ def parse_speccy(speccy_xml):
     summary['user'] = tree.xpath('/speccydata/mainsection[@title="Network"]/section[@title="Computer Name"]/entry[@title="NetBIOS Name"]')[0].get('value')
     summary['os'] = tree.xpath('/speccydata/mainsection[@title="Summary"]/section[@title="Operating System"]/entry')[0].get('title')
     summary['cpu'] = tree.xpath('/speccydata/mainsection[@title="CPU"]/section/entry[@title="Name"]')[0].get('value')
-    mem_size = tree.xpath('/speccydata/mainsection[@title="RAM"]/section[@title="Memory"]/entry[@title="Size"]')[0].get('value')
-    mem_total_physical = tree.xpath('/speccydata/mainsection[@title="RAM"]/section[@title="Physical Memory"]/entry[@title="Total Physical"]')[0].get('value')
-    ram = mem_total_physical if 'GB' in mem_total_physical else mem_size
-    summary['ram'] = ram
+
+    # DEPRECATED; Now we calc total RAM as total sum of every ram module
+    # mem_size = tree.xpath('/speccydata/mainsection[@title="RAM"]/section[@title="Memory"]/entry[@title="Size"]')[0].get('value')
+    # mem_total_physical = tree.xpath('/speccydata/mainsection[@title="RAM"]/section[@title="Physical Memory"]/entry[@title="Total Physical"]')[0].get('value')
+    # ram = mem_total_physical if 'GB' in mem_total_physical else mem_size
+    # summary['ram'] = ram
+
     summary['installation_date'] = tree.xpath('/speccydata/mainsection[@title="Operating System"]/entry[contains(@value, "Installation Date")]')[0].get('value')
-    # summary['ram_used_slots'] = tree.xpath('/speccydata/mainsection[@title="RAM"]/section[@title="Memory slots"]/entry[@title="Used memory slots"]')[0].get('value')
 
     #
     # CPU
@@ -35,15 +36,16 @@ def parse_speccy(speccy_xml):
         feature['Количество ядер'] = leaf.xpath('entry[@title="Cores"]')[0].get('value')
         feature['Количество потоков'] = leaf.xpath('entry[@title="Threads"]')[0].get('value')
         feature['Архитектура'] = leaf.xpath('entry[@title="Code Name"]')[0].get('value')
-        feature['Сокет'] = leaf.xpath('entry[@title="Package"]')[0].get('value')
+        try:
+            feature['Сокет'] = leaf.xpath('entry[@title="Package"]')[0].get('value')
+        except IndexError: feature['Сокет'] = 'Unknown'
         feature['Литография'] = leaf.xpath('entry[@title="Technology"]')[0].get('value')
         feature['Ревизия'] = leaf.xpath('entry[@title="Revision"]')[0].get('value')
         feature['Базовая тактовая частота процессора'] = leaf.xpath('entry[@title="Stock Core Speed"]')[0].get('value')
-        #feature['socket'] = ''  # TODO Must return socket; must eligible with Motherboard socket; must searchable; look reference `CPU socket`
 
         device = dict()
         device['type'] = 'cpu'
-        device['verbose'] = feature['Процессор']
+        device['verbose'] = '{Процессор} ({Архитектура}, {Сокет})'.format(**feature)
         device['feature'] = feature
         devices.append(device)
 
@@ -53,16 +55,24 @@ def parse_speccy(speccy_xml):
     feature = dict()
     feature['Бренд'] = tree.xpath('/speccydata/mainsection[@title="Motherboard"]/entry[@title="Manufacturer"]')[0].get('value')
     feature['Модель'] = tree.xpath('/speccydata/mainsection[@title="Motherboard"]/entry[@title="Model"]')[0].get('value')
-    feature['Чипсет, вендор'] = tree.xpath('/speccydata/mainsection[@title="Motherboard"]/entry[@title="Chipset Vendor"]')[0].get('value')
-    feature['Чипсет, модель'] = tree.xpath('/speccydata/mainsection[@title="Motherboard"]/entry[@title="Chipset Model"]')[0].get('value')
-    feature['Память, тип'] = tree.xpath('/speccydata/mainsection[@title="RAM"]/section[@title="Memory"]/entry[@title="Type"]')[0].get('value')
-    feature['Память, кол-во слотов'] = tree.xpath('/speccydata/mainsection[@title="RAM"]/section[@title="Memory slots"]/entry[@title="Total memory slots"]')[0].get('value')
+    try:
+        feature['Чипсет, вендор'] = tree.xpath('/speccydata/mainsection[@title="Motherboard"]/entry[@title="Chipset Vendor"]')[0].get('value')
+    except IndexError: feature['Чипсет, вендор'] = 'Unknown'
+    try:
+        feature['Чипсет, модель'] = tree.xpath('/speccydata/mainsection[@title="Motherboard"]/entry[@title="Chipset Model"]')[0].get('value')
+    except IndexError: feature['Чипсет, модель'] = 'Unknown'
+    try:
+        feature['Память, тип'] = tree.xpath('/speccydata/mainsection[@title="RAM"]/section[@title="Memory"]/entry[@title="Type"]')[0].get('value')
+    except IndexError: feature['Память, тип'] = 'Unknown'
+    try:
+        feature['Память, кол-во слотов'] = tree.xpath('/speccydata/mainsection[@title="RAM"]/section[@title="Memory slots"]/entry[@title="Total memory slots"]')[0].get('value')
+    except IndexError: feature['Память, кол-во слотов'] = 'Unknown'
     feature['Биос, вендор'] = tree.xpath('/speccydata/mainsection[@title="Motherboard"]/section[@title="BIOS"]/entry[@title="Brand"]')[0].get('value')
     feature['Биос, дата'] = tree.xpath('/speccydata/mainsection[@title="Motherboard"]/section[@title="BIOS"]/entry[@title="Date"]')[0].get('value')
 
     device = dict()
     device['type'] = 'motherboard'
-    device['verbose'] = ' '.join([feature['Бренд'], feature['Модель']])
+    device['verbose'] = '{Бренд} {Модель}'.format(**feature)
     device['feature'] = feature
     devices.append(device)
 
@@ -72,24 +82,34 @@ def parse_speccy(speccy_xml):
     memory_slots_branch = tree.iterfind('.//section[@title="SPD"]/section')
     for leaf in memory_slots_branch:  # поиск элементов
         feature = dict()
-        feature['Слот'] = leaf.get('title')
-        feature['Тип модуля'] = leaf.xpath('entry[@title="Type"]')[0].get('value')
-        feature['Объем'] = leaf.xpath('entry[@title="Size"]')[0].get('value')
+        #feature['Слот'] = leaf.get('title')
+        feature['Тип'] = leaf.xpath('entry[@title="Type"]')[0].get('value')
+
+        # rename DDR to DDR1, so you can select only ddr1 (without ddr2, ddr3, etc)
+        if feature['Тип'] == 'DDR':
+            feature['Тип'] = 'DDR1'
+
+        mem = leaf.xpath('entry[@title="Size"]')[0].get('value')
+        mem = human_to_bytes(mem)
+        mem = bytes_to_human(mem, base=1024)
+        feature['Объем'] = mem
         feature['Вендор'] = leaf.xpath('entry[@title="Manufacturer"]')[0].get('value')
         feature['Частота'] = leaf.xpath('entry[@title="Max Bandwidth"]')[0].get('value')
-        feature['Серия (Part Number)'] = leaf.xpath('entry[@title="Part Number"]')[0].get('value')
+        try:
+            feature['Серия (Part Number)'] = leaf.xpath('entry[@title="Part Number"]')[0].get('value')
+        except IndexError: pass
+
         try:
             feature['Серийный номер'] = leaf.xpath('entry[@title="Serial Number"]')[0].get('value')
-        except IndexError:
-            pass
+        except IndexError: pass
+
         try:
             feature['Изготовлено (Week-year)'] = leaf.xpath('entry[@title="Week/year"]')[0].get('value')
-        except:
-            pass
+        except IndexError: pass
 
         device = dict()
         device['type'] = 'memory'
-        device['verbose'] = ' '.join([feature['Вендор'], feature['Объем']])
+        device['verbose'] = '{Вендор} {Объем} {Тип}'.format(**feature)
         device['feature'] = feature
         devices.append(device)
 
@@ -110,11 +130,11 @@ def parse_speccy(speccy_xml):
             try:
                 feature['Модель'] = model_match.group(1)
             except AttributeError: pass
-            feature['Нативное разрешение'] = leaf.xpath('entry[@title="Work Resolution"]')[0].get('value')
+            feature['Нативное разрешение'] = leaf.xpath('entry[@title="Current Resolution"]')[0].get('value')
             device = dict()
             device['type'] = 'monitor'
             try:
-                device['verbose'] = feature['model']
+                device['verbose'] = feature['Модель']
             except KeyError:
                 device['verbose'] = leaf.get('title')
             device['feature'] = feature
@@ -131,15 +151,17 @@ def parse_speccy(speccy_xml):
     # отсутствуют в секции с монитором.
     # TODO еще больше проблем будет, когда надо будет делтаь массив видео карт для много-видеокартных систем
     #                                                                                ↓↓↓↓↓↓↓
-    feature['Чипсет, вендор'] = tree.xpath('/speccydata/mainsection[@title="Graphics"]/section/entry[@title="Manufacturer"]')[0].get('value')
+    try:
+        feature['Чипсет, вендор'] = tree.xpath('/speccydata/mainsection[@title="Graphics"]/section/entry[@title="Manufacturer"]')[0].get('value')
+    except IndexError:
+        feature = None
+
     # Далее, нет способа определить, интегрированное видео или дискретное. Предположу, что Intel не делает дискретных
     # видух (пруф https://linustechtips.com/main/topic/380568-has-intel-ever-made-a-dedicated-graphics-card/),
     # а интегрированные бывают только 'Intel' или 'ATI'. Если так, то считаем, что видео интегрированное:
     # ==================== ШО ЗА БРЕД?! ATI МОЖЕТ БЫТЬ И ДИСКРЕТНАЯ
 
-    if feature['Чипсет, вендор'] in ['Intel', 'ATI']:
-        pass
-    else:
+    if feature and feature['Чипсет, вендор'] not in ['Intel', 'ATI']:
         feature['Модель'] = tree.xpath('/speccydata/mainsection[@title="Graphics"]/section/entry[@title="Model"]')[0].get('value')
         feature['Бренд'] = tree.xpath('/speccydata/mainsection[@title="Graphics"]/section/entry[@title="Subvendor"]')[0].get('value')
 
@@ -169,6 +191,8 @@ def parse_speccy(speccy_xml):
         device['verbose'] = ' '.join([feature['Чипсет, вендор'], feature['Модель']])
         device['feature'] = feature
         devices.append(device)
+    else:
+        pass
 
     #
     # HDD
@@ -184,32 +208,47 @@ def parse_speccy(speccy_xml):
             feature['Бренд'] = ''
 
         try:
-            speed = leaf.xpath('entry[@title="Speed"]')[0].get('value')
+            features = leaf.xpath('entry[@title="Features"]')[0].get('value')
         except:
-            feature['Тип носителя'] = 'HDD'
+            feature['Тип носителя'] = ''
         else:
-            if 'SSD' in speed:
+            if 'SSD' in features:
                 feature['Тип носителя'] = 'SSD'
             else:
                 feature['Тип носителя'] = 'HDD'
-                feature['Скорость'] = speed
-
-        capacity = leaf.xpath('entry[@title="Capacity"]')[0].get('value')
-        feature['Емкость'] = capacity
 
         feature['Серийный номер'] = leaf.xpath('entry[@title="Serial Number"]')[0].get('value')
-        feature['Интерфейс'] = leaf.xpath('entry[@title="Interface"]')[0].get('value')
-        feature['Тип SATA'] = leaf.xpath('entry[@title="SATA type"]')[0].get('value')
+        #feature['Интерфейс'] = leaf.xpath('entry[@title="Interface"]')[0].get('value')
+        interface = leaf.xpath('entry[@title="Interface"]')[0].get('value')
+        feature['Интерфейс'] = 'IDE' if interface=='ATA' else interface
+        try:
+            feature['Ревизия SATA'] = leaf.xpath('entry[@title="SATA type"]')[0].get('value')
+        except IndexError:
+            pass
+        try:
+            feature['Стандарт ATA'] = leaf.xpath('entry[@title="ATA Standard"]')[0].get('value')
+        except IndexError:
+            pass
+        try:
+            feature['Форм-фактор'] = leaf.xpath('entry[@title="Form Factor"]')[0].get('value')
+        except IndexError:
+            pass
+        try:
+            feature['Шпиндель (RPM-class)'] = leaf.xpath('entry[@title="Speed"]')[0].get('value')
+        except IndexError:
+            pass
+
         real_size = leaf.xpath('entry[@title="Real size"]')[0].get('value') #.replace(" ", "")
 
-        # convert real_size to list, then filter only digets, then join and int them
+        # convert real_size to list, then filter only digets, then join and int them.
+        # Example of real_size: 1 000 204 886 016 bytes
         capacity_in_bytes = int(''.join(filter(lambda x: x.isdigit(), list(real_size))))
-        feature['Емкость SI'] = bytes_to_human(capacity_in_bytes)
-        # OR you can use feature['Емкость human readable'] = capacity_to_human(capacity)
+        feature['Емкость'] = bytes_to_human(capacity_in_bytes, base=1000)
 
         device = dict()
         device['type'] = 'storage'
-        device['verbose'] = ' '.join([feature['Бренд'], feature['Емкость SI'], feature['Тип носителя']])
+        device['verbose'] = '{Бренд} {Емкость} {Тип носителя}'.format(**feature)
+        #device['verbose'] = ' '.join([feature['Бренд'], feature['Емкость'], feature['Тип носителя']])
         device['feature'] = feature
         devices.append(device)
 

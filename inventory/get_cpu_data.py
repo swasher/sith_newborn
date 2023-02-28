@@ -46,7 +46,7 @@ def generate_intel_data(html_input):
 
     # Выбираем из всего списка свойств только нужные
     id_list = ['ProcessorNumber', 'StatusCodeText', 'BornOnDate', 'Lithography', 'Price1KUnits', 'CoreCount',
-               'ThreadCount', 'ClockSpeed', 'MaxTDP', 'GraphicsModel', 'SocketsSupported', 'InstructionSet'] #also need Codename!
+               'ThreadCount', 'ClockSpeed', 'MaxTDP', 'GraphicsModel', 'InstructionSet'] #also need Codename!
 
     for table in soup.select('table.specs'):
         rows = table.find_all("tr")

@@ -6,128 +6,96 @@
   {% load staticfiles %}
   {% load mptt_tags %}
 
-
 <div class="container-fluid">
   <!-- Nav tabs -->
   <ul class="nav nav-tabs" role="tablist">
-    <li role="presentation" class="active">  <a href="#computer" aria-controls="computer" role="tab" data-toggle="tab">Computer</a></li>
-    <li role="presentation">                 <a href="#cpu"      aria-controls="cpu" role="tab" data-toggle="tab">Cpu</a></li>
-    <li role="presentation">                 <a href="#memory"   aria-controls="memory" role="tab" data-toggle="tab">Memory</a></li>
-    <li role="presentation">                 <a href="#storage"  aria-controls="storage" role="tab" data-toggle="tab">Storage</a></li>
+    <li role="presentation" class="active">  <a href="#all"      aria-controls="all" role="tab" data-toggle="tab">ALL</a></li>
+    <li role="presentation">                 <a href="#computer" aria-controls="computer" role="tab" data-toggle="tab">Computer</a></li>
     <li role="presentation">                 <a href="#devices"  aria-controls="devices" role="tab" data-toggle="tab">Devices</a></li>
     <li role="presentation">                 <a href="#todo"     aria-controls="todo" role="tab" data-toggle="tab">TODO</a></li>
   </ul>
 
-
   <div class="tab-content">
 
-      <div role="tabpanel" class="tab-pane fade in active" id="computer">
+      <div role="tabpanel" class="tab-pane fade in active" id="all">
+          <table class="table table-striped table-hover table-bordered" id="table-all" width="100%">
+
+            <thead>
+            <tr>
+              <th>Наименование</th>
+              <th>Расположение</th>
+              <th>Тип</th>
+              <th>Бренд</th>
+              <th>Модель</th>
+              <th>Изготовлено</th>
+              <th>Куплено</th>
+              <th>Цена, USD</th>
+            </tr>
+            <thead>
+
+            <tbody>
+            {% for item in all %}
+              <tr>
+                <td><a href="{% url 'admin:inventory_component_change' item.pk %}">{{ item.name }}</a></td>
+
+                {% if item.parentkind == 'PC' %}
+                  <td><a href="{% url 'admin:inventory_computer_change' item.parentid %}">{{ item.breadcrumbs }}</a></td>
+                {% else %}
+                  <td><a href="{% url 'admin:inventory_container_change' item.parentid %}">{{ item.breadcrumbs }}</a></td>
+                {% endif %}
+
+                <td><a href="{% url 'admin:inventory_sparetype_change' item.sparetype.id %}">{{ item.sparetype }}</a></td>
+                <td>
+                  {% with item.brand as brand %}
+                    {% if brand %}
+                      <a href="{% url 'admin:inventory_manufacture_change' brand.id %}">{{ brand|default_if_none:'' }}</a>
+                    {% endif %}
+                  {% endwith %}
+                </td>
+
+                <td>{{ item.model|default_if_none:'' }}</td>
+                <td>{{ item.assembled|default_if_none:'' }} {{ item.manufacturing_date|default_if_none:'' }}</td>
+                <td>{{ item.store|default_if_none:'' }} {{ item.purchase_date|date:"d.m.Y"|default_if_none:'' }}</td>
+                <td>{{ item.price_usd|default_if_none:'' }}</td>
+              </tr>
+            {% endfor %}
+            </tbody>
+
+          </table>
+      </div>
+
+      <div role="tabpanel" class="tab-pane fade" id="computer">
           <table class="table table-striped table-hover table-bordered" id="table-computer" width="100%">
 
             <thead>
             <tr>
-              <th>Name</th>
+              <th>Наименование</th>
+              <th>Расположение</th>
+              <th>CPU</th>
+              <th>RAM</th>
               <th>Os</th>
-              <th>Ram</th>
-              <th>Parent</th>
+              <th>Price</th>
             </tr>
             <thead>
-
-{#            <tfoot>#}
-{#            <tr>#}
-{#              <th>Name</th>#}
-{#              <th>Os</th>#}
-{#              <th>Ram</th>#}
-{#              <th>Parent</th>#}
-{#            </tr>#}
-{#            </tfoot>#}
 
             <tbody>
             {% for computer in computers %}
               <tr>
                 <td><a href="{% url 'admin:inventory_computer_change' computer.pk %}">{{ computer.name }}</a></td>
-                <td>{{ computer.os }}</td>
+                <td>
+                  {% comment %}
+                  {% url 'admin:inventory_container_change' computer.parent.pk as the_url %}
+                  <a href="{{ the_url }}">
+                    {{ computer.get_ancestors|tree_path:" > "}}
+                  </a>
+                  {% endcomment %}
+                  {% url 'admin:inventory_container_change' computer.parentid as the_url %}
+                  <a href="{{ the_url }}">{{ computer.breadcrumbs }}</a>
+                </td>
+                <td>{{ computer.get_cpu }}</td>
                 <td>{{ computer.ram }}</td>
-                <td>{{ computer.get_ancestors_list }}</td>
-              </tr>
-            {% endfor %}
-            </tbody>
-
-          </table>
-      </div>
-
-      <div role="tabpanel" class="tab-pane fade" id="cpu">
-          <table class="table table-striped table-hover table-bordered" id="table-cpu" width="100%">
-
-            <thead>
-            <tr>
-              <th>CPU</th>
-              <th>Container</th>
-              <th>Container</th>
-              <th>Container</th>
-            </tr>
-            <thead>
-
-            <tbody>
-            {% for cpu in processors %}
-              <tr>
-                <td><a href="{% url 'admin:inventory_component_change' cpu.pk %}">{{ cpu.name }}</a></td>
-                <td>{{ cpu.container.name }}</td>
-                <td>{{ cpu.container.name }}</td>
-                <td>{{ cpu.container.name }}</td>
-              </tr>
-            {% endfor %}
-            </tbody>
-
-          </table>
-      </div>
-
-      <div role="tabpanel" class="tab-pane fade" id="memory">
-          <table class="table table-striped table-hover table-bordered" id="table-memory" width="100%">
-
-            <thead>
-              <tr>
-                <th>Memory</th>
-                <th>Type</th>
-                <th>Container</th>
-              </tr>
-            <thead>
-
-            <tbody>
-            {% for mem in memory %}
-              <tr>
-                <td><a href="{% url 'admin:inventory_component_change' mem.pk %}">{{ mem.name }}</a></td>
-                <td>{{ mem.data.type }}</td>
-                <td>{{ mem.container.name }}</td>
-              </tr>
-            {% endfor %}
-            </tbody>
-
-          </table>
-      </div>
-
-
-      <div role="tabpanel" class="tab-pane fade" id="storage">
-          <table class="table table-striped table-hover table-bordered" id="table-storage" width="100%">
-
-            <thead>
-              <tr>
-                <th>Накопитель</th>
-                <th>Бранд</th>
-                <th>Модель</th>
-                <th>Емкость</th>
-                <th>Container</th>
-              </tr>
-            <thead>
-
-            <tbody>
-            {% for storage in storages %}
-              <tr>
-                <td><a href="{% url 'admin:inventory_component_change' storage.pk %}">{{ storage.name }}</a></td>
-                <td>{{ storage.brand }}</td>
-                <td>{{ storage.model }}</td>
-                <td>{{ storage.data.Емкость }}</td>
-                <td>{{ storage.container.name }}</td>
+                <td>{{ computer.os }}</td>
+                <td>{{ computer.price }}</td>
               </tr>
             {% endfor %}
             </tbody>
@@ -140,9 +108,10 @@
 
             <thead>
               <tr>
-                <th>Device</th>
-                <th>Type</th>
-                <th>Container</th>
+                <th>Устройство</th>
+                <th>Расположение</th>
+                <th>Тип</th>
+                <th>Цена, USD</th>
               </tr>
             <thead>
 
@@ -150,15 +119,15 @@
             {% for device in devices %}
               <tr>
                 <td><a href="{% url 'admin:inventory_component_change' device.pk %}">{{ device.name }}</a></td>
+                <td><a href="{% url 'admin:inventory_container_change' device.parentid %}">{{ device.breadcrumbs }}</a></td>
                 <td>{{ device.sparetype }}</td>
-                <td>{{ device.container.name }}</td>
+                <td>{{ device.price_usd|default_if_none:"" }}</td>
               </tr>
             {% endfor %}
             </tbody>
 
           </table>
       </div>
-
 
 
       <div role="tabpanel" class="tab-pane fade" id="todo">
@@ -166,26 +135,26 @@
 
             <thead>
               <tr>
-                <th>Device</th>
-                <th>Type</th>
-                <th>Container</th>
-                <th>TODO</th>
+                <th>Устройство</th>
+                <th>Тип</th>
+                <th>Расположение</th>
+                <th class="col-md-6">TODO</th>
               </tr>
             <thead>
 
             <tbody>
-            {% for do in todo %}
+            {% for item in todo %}
               <tr>
-                {% if do.description %}
-                  <td><a href="{% url 'admin:inventory_component_change' do.pk %}">{{ do.name }}</a></td>
-                  <td>{{ do.sparetype }}</td>
-                  <td>{{ do.container.name }}</td>
-                  <td>{{ do.description }}</td>
-                {% else %}
-                  <td><a href="{% url 'admin:inventory_computer_change' do.pk %}">{{ do.name }}</a></td>
+                {% if item.kind == 'PC' %}
+                  <td><a href="{% url 'admin:inventory_computer_change' item.pk %}">{{ item.name }}</a></td>
                   <td>Компьютер</td>
-                  <td>{{ do.parent }}</td>
-                  <td>{{ do.notice }}</td>
+                  <td>{{ item.breadcrumbs }}</td>
+                  <td>{{ item.todo|linebreaks }}</td>
+                {% else %}
+                  <td><a href="{% url 'admin:inventory_component_change' item.pk %}">{{ item.name }}</a></td>
+                  <td>{{ item.sparetype }}</td>
+                  <td>{{ item.breadcrumbs }}</td>
+                  <td>{{ item.todo|linebreaks }}</td>
                 {% endif %}
               </tr>
             {% endfor %}
@@ -193,9 +162,6 @@
 
           </table>
       </div>
-
-
-
   </div>
 </div>
 

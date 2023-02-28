@@ -1,116 +1,145 @@
 {% load i18n admin_urls admin_static %}
+<link rel="stylesheet" type="text/css" href="{% static "stacked.css" %}" />
+
 <div class="inline-group" id="{{ inline_admin_formset.formset.prefix }}-group">
-<h2>{{ inline_admin_formset.opts.verbose_name_plural|capfirst }}</h2>
-{{ inline_admin_formset.formset.management_form }}
-{{ inline_admin_formset.formset.non_form_errors }}
+  <h2>{{ inline_admin_formset.opts.verbose_name_plural|capfirst }}</h2>
+  {{ inline_admin_formset.formset.management_form }}
+  {{ inline_admin_formset.formset.non_form_errors }}
 
-<style type="text/css">
-  .inlinechangelink {
-      padding-right: 10px;
-      text-align-all: right;
-      background-color: #00b3ee;
-      background: url("{% static 'admin/img/icon-changelink.svg' %}") 0 1px no-repeat;
-  }
-  .changing {
-      display: inline-block;
-      position: relative;
-      float: right;
-  }
-  .type {
-      display: inline-block;
-      -webkit-column-width: 200px;
-  }
-  .title {
-      display: inline-block;
-  }
-  div.has_original fieldset.module.aligned {
-{#    visibility: collapse;#}
-    display: none;
-  }
-</style>
+{% comment %}  <style type="text/css">
+    .inlinechangelink {
+        padding-right: 10px;
+        text-align-all: right;
+        background-color: #00b3ee;
+        background: url("{% static 'admin/img/icon-changelink.svg' %}") 0 1px no-repeat;
+    }
+    .changing {
+        display: inline-block;
+        position: relative;
+        float: right;
+    }
+    .type {
+        display: inline-block;
+        -webkit-column-width: 200px;
+    }
+    .title {
+        display: inline-block;
+        width: 250px;
+    }
+    .container {
+        display: inline-block;
+        font-style: normal;
+    }
+    .container a:link {
+      color: darkgrey;
+    }
+    .container a:visited {
+      color: darkgrey;
+    }
+    .container a:hover {
+      color: dimgray;
+    }
+    div.has_original fieldset.module.aligned {
+    {#    visibility: collapse;#}
+      display: none;
+    }
+  </style>{% endcomment %}
 
-{% for inline_admin_form in inline_admin_formset %}
+  {% for inline_admin_form in inline_admin_formset %}
     <div class="inline-related
-        {% if inline_admin_form.original or inline_admin_form.show_url %} has_original
+      {% if inline_admin_form.original or inline_admin_form.show_url %} has_original
+      {% endif %}
+      {% if forloop.last %} empty-form last-related
+      {% endif %}"
+      id="{{ inline_admin_formset.formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
+
+      <h3>&nbsp;<span class="inline_label">
+        {% if inline_admin_form.original %}
+          {% if inline_admin_form.model_admin.show_change_link and inline_admin_form.model_admin.has_registered_model %}
+
+            {% if inline_admin_form.model_admin.opts.model_name == 'container' %}
+              <div class="type">{% spaceless %}{{ inline_admin_form.original.get_kind_display }}{% endspaceless %}:</div>
+              <div class="title">
+                {# <a href="{% url inline_admin_form.model_admin.opts|admin_urlname:'change' inline_admin_form.original.pk|admin_urlquote %}" >#}
+                <a href="{% url 'admin:inventory_computer_change' inline_admin_form.original.pk|admin_urlquote %}" >
+                  {{ inline_admin_form.original }}
+                </a></div>
+            {% endif %}
+
+            {% if inline_admin_form.model_admin.opts.model_name == 'component' %}
+              <div class="type">
+                {% spaceless %}{{ inline_admin_form.original.sparetype.name_verbose }}{% endspaceless %}:
+              </div>
+              <div class="title">
+                <a href="{% url inline_admin_form.model_admin.opts|admin_urlname:'change' inline_admin_form.original.pk|admin_urlquote %}" >
+                  {{ inline_admin_form.original }}
+                </a>
+              </div>
+              {% if inline_admin_form.model_admin.show_container %}
+                <div class="container">
+                  <a href="{% url 'admin:inventory_computer_change' inline_admin_form.original.container.pk|admin_urlquote %}" >
+                    {{ inline_admin_form.original.container }}
+                  </a>
+                </a>
+                </div>
+              {% endif %}
+            {% endif %}
+
+          {% else %}
+             {{ inline_admin_form.original }}
+          {% endif %}
+
+          {% comment %} Ссылка "Изменить" перенесена в правую часть
+              {% if inline_admin_form.model_admin.show_change_link and inline_admin_form.model_admin.has_registered_model %}
+              <a href="{% url inline_admin_form.model_admin.opts|admin_urlname:'change' inline_admin_form.original.pk|admin_urlquote %}"
+              class="inlinechangelink">{% trans "Change" %}</a>
+              {% endif %}
+          {% endcomment %}
+
+        {% else %}
+          #{{ forloop.counter }}
+        {% endif %}</span>
+
+        {% if inline_admin_form.show_url %}
+            <a href="{{ inline_admin_form.absolute_url }}">{% trans "View on site" %}</a>
         {% endif %}
-        {% if forloop.last %} empty-form last-related
-        {% endif %}"
 
-        id="{{ inline_admin_formset.formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
-
-        <h3>&nbsp;<span class="inline_label">
+        <div class="changing">
+          <span class="inline_label">
             {% if inline_admin_form.original %}
-                {% if inline_admin_form.model_admin.show_change_link and inline_admin_form.model_admin.has_registered_model %}
-
-                    {% if inline_admin_form.model_admin.opts.model_name == 'container' %}
-                      <div class="type">{% spaceless %}{{ inline_admin_form.original.get_kind_display }}{% endspaceless %}:</div>
-                      <div class="title">
-{#                        <a href="{% url inline_admin_form.model_admin.opts|admin_urlname:'change' inline_admin_form.original.pk|admin_urlquote %}" >#}
-                        <a href="{% url 'admin:inventory_computer_change' inline_admin_form.original.pk|admin_urlquote %}" >
-                          {{ inline_admin_form.original }}
-                        </a></div>
-                    {% endif %}
-
-                    {% if inline_admin_form.model_admin.opts.model_name == 'component' %}
-                      <div class="type">{% spaceless %}{{ inline_admin_form.original.sparetype.name_verbose }}{% endspaceless %}:</div>
-                      <div class="title"><a href="{% url inline_admin_form.model_admin.opts|admin_urlname:'change' inline_admin_form.original.pk|admin_urlquote %}" > {{ inline_admin_form.original }} </a></div>
-                    {% endif %}
-
-
-                {% else %}
-                   {{ inline_admin_form.original }}
-                {% endif %}
-
-                {% comment %} Ссылка "Изменить" перенесена в правую часть
-                    {% if inline_admin_form.model_admin.show_change_link and inline_admin_form.model_admin.has_registered_model %}
-                    <a href="{% url inline_admin_form.model_admin.opts|admin_urlname:'change' inline_admin_form.original.pk|admin_urlquote %}"
-                    class="inlinechangelink">{% trans "Change" %}</a>
-                    {% endif %}
-                {% endcomment %}
-
-            {% else %}
-              #{{ forloop.counter }}
-            {% endif %}</span>
-
-            {% if inline_admin_form.show_url %}
-                <a href="{{ inline_admin_form.absolute_url }}">{% trans "View on site" %}</a>
-            {% endif %}
-
-            <div class="changing">
-            <span class="inline_label">
-            {% if inline_admin_form.original %}
-                {% if inline_admin_form.model_admin.show_change_link and inline_admin_form.model_admin.has_registered_model %}
-                    <a href="{% url inline_admin_form.model_admin.opts|admin_urlname:'change' inline_admin_form.original.pk|admin_urlquote %}" class="inlinechangelink">{% trans "Change" %}</a>
-                {% endif %}
+              {% if inline_admin_form.model_admin.show_change_link and inline_admin_form.model_admin.has_registered_model %}
+                <a href="{% url inline_admin_form.model_admin.opts|admin_urlname:'change' inline_admin_form.original.pk|admin_urlquote %}" class="inlinechangelink">{% trans "Change" %}</a>
+              {% endif %}
             {% else %}
               #{{ forloop.counter }}
             {% endif %}
+          </span>
+
+          {% if inline_admin_formset.formset.can_delete and inline_admin_form.original %}
+            <span class="delete">
+              {{ inline_admin_form.deletion_field.field }} {{ inline_admin_form.deletion_field.label_tag }}
             </span>
+          {% endif %}
+        </div>
+      </h3>
 
-            {% if inline_admin_formset.formset.can_delete and inline_admin_form.original %}
-              <span class="delete">{{ inline_admin_form.deletion_field.field }} {{ inline_admin_form.deletion_field.label_tag }}</span>
-            {% endif %}
-            </div>
+      {% if inline_admin_form.form.non_field_errors %}
+        {{ inline_admin_form.form.non_field_errors }}
+      {% endif %}
 
-        </h3>
-
-        {% if inline_admin_form.form.non_field_errors %}
-            {{ inline_admin_form.form.non_field_errors }}
-        {% endif %}
-
-        {# Это блок, отображающий поля модели для объектов в инлайне. Они скрываются при помощи css, #}
-        {# но должны присутствовать на странице, иначе не работает Save - пишет "исправьте ошибки", так как поля Name пустое как-бы #}
-        {% for fieldset in inline_admin_form %}
+      {# Это блок, отображающий поля модели для объектов в инлайне. Они скрываются при помощи css, #}
+      {# но должны присутствовать на странице, иначе не работает Save - пишет "исправьте ошибки", так как поля Name пустое как-бы #}
+      {% for fieldset in inline_admin_form %}
         {% include "admin/includes/fieldset.html" %}
-        {% endfor %}
+      {% endfor %}
 
-
-    {% if inline_admin_form.needs_explicit_pk_field %}
+      {% if inline_admin_form.needs_explicit_pk_field %}
         {{ inline_admin_form.pk_field.field }}
-    {% endif %}
-  {{ inline_admin_form.fk_field.field }}
-</div>
-{% endfor %}
+      {% endif %}
+      {{ inline_admin_form.fk_field.field }}
+
+    </div>
+  {% endfor %}
 </div>
 
 <script type="text/javascript">

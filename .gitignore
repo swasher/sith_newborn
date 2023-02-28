@@ -3,6 +3,7 @@ usefull_info.md
 /test
 latest.heroku.dump
 .env
+*.xml
 
 # Файлы, создаваемые приложением
 *.pyc
@@ -23,3 +24,4 @@ bower_components
 
 
 
+requirements.github.txt

@@ -1,0 +1,36 @@
+.inlinechangelink {
+    padding-right: 10px;
+    text-align-all: right;
+    background-color: #00b3ee;
+    background: url("admin/img/icon-changelink.svg") 0 1px no-repeat;
+}
+.changing {
+    display: inline-block;
+    position: relative;
+    float: right;
+}
+.type {
+    display: inline-block;
+    -webkit-column-width: 160px;
+    -moz-column-width: 160px;
+}
+.title {
+    display: inline-block;
+    width: 340px;
+}
+.container {
+    display: inline-block;
+    font-style: normal;
+}
+.container a:link {
+  color: darkgrey;
+}
+.container a:visited {
+  color: darkgrey;
+}
+.container a:hover {
+  color: dimgray;
+}
+div.has_original fieldset.module.aligned {
+  display: none;
+}

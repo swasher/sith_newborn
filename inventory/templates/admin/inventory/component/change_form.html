@@ -6,24 +6,34 @@
 {% block extrastyle %}
 
   {{ block.super }}
+
+  <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+  <script src="//cdn.rawgit.com/noelboss/featherlight/1.5.1/release/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
   <link rel="stylesheet" type="text/css" href="{% static "inline_images_upload.css" %}" />
   <link rel="stylesheet" type="text/css" href="{% static "featherlight_loader.css" %}" />
-{#  <link rel="stylesheet" type="text/css" href="{% static ".css" %}" />#}
-  <link href="//cdn.rawgit.com/noelboss/featherlight/1.5.0/release/featherlight.min.css" type="text/css" rel="stylesheet" />
-  <script src="//code.jquery.com/jquery-latest.js"></script>
-  <script src="//cdn.rawgit.com/noelboss/featherlight/1.5.0/release/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+  <link href="//cdn.rawgit.com/noelboss/featherlight/1.5.1/release/featherlight.min.css" type="text/css" rel="stylesheet" />
+
 {% endblock %}
 
 
 {% block after_related_objects %}
 
-<div class="submit-row">
-  {% if original.sparetype.name == 'cpu' %}
-    <input type="submit" value="Load CPU data" class="default" name="_load_cpu_data" />
+  {% if request.user.is_superuser %}
+    <div class="submit-row">
+      {% if original.sparetype.name == 'cpu' %}
+        <input type="submit" value="Load CPU data" class="default" name="_load_cpu_data" />
+      {% endif %}
+
+      {#  _load_component_properties handled by inventory/admin.py, class 'ComponentAdmin', method 'response_change' #}
+      <input type="submit" value="Load component properties" class="default" name="_load_component_properties" />
+    </div>
   {% endif %}
 
-  {#  _load_component_properties handled by inventory/admin.py, class 'ComponentAdmin', method 'response_change' #}
-  <input type="submit" value="Load component properties" class="default" name="_load_component_properties" />
-</div>
+{% endblock %}
 
+
+{% block submit_buttons_bottom %}
+  {% if request.user.is_superuser %}
+    {{ block.super }}
+  {% endif %}
 {% endblock %}

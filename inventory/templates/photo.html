@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block body %}
+{% load admin_urls %}
+
+{% for component in c %}
+
+  {% if component.image_set.all %}
+
+    <a href="{% url 'admin:inventory_component_change' component.pk %}">{{ component.name }}</a>
+
+    <table class="table table-striped table-hover table-bordered" id="table-all" width="100%">
+      <tr class="col-md-1">
+        {% for image in component.image_set.all %}
+    {#        <td> <img height="100px" src="{{ image.preview_url }}"> </td>#}
+          <td>{% autoescape off %}{{ image.preview_url }}{% endautoescape %}</td>
+        {% endfor %}
+      </tr>
+    </table>
+
+  {% endif %}
+
+{% endfor %}
+
+
+{% endblock %}

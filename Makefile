@@ -19,9 +19,9 @@ migrate:
 	python manage.py migrate
 
 cleardb:
-	rm -rf inventory/migrations/*
+	# rm -rf inventory/migrations/*
 	docker compose down
-	docker volume prune --force
+	docker volume rm sith_newborn_postgres_data
 	docker compose up -d
 	sleep 2
 	python manage.py makemigrations inventory
@@ -66,5 +66,4 @@ heroku-reset-db:
 	heroku run python manage.py collectstatic
 
 restore:
-	cat latest.dump | docker exec -i sith-db-1 pg_restore --verbose --clean --no-acl --no-owner -h localhost -U postgres -d postgres
-
+	cat latest.heroku.dump | docker exec -i sith_newborn-db-1 pg_restore --verbose --clean --no-acl --no-owner -h localhost -U postgres -d postgres

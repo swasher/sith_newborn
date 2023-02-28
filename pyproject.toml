@@ -20,6 +20,8 @@ lxml = { file = "whl/lxml-4.6.2-cp36-cp36m-win_amd64.whl" }
 django-hstore = "1.4.2"
 currencylayer = {git = "https://github.com/Said007/currencylayer"}
 beautifulsoup4 = "4.5.1"
+humanfriendly = "2.1"
+pytz = "2016.7"
 
 
 [build-system]
