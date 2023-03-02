@@ -229,6 +229,18 @@ files = [
 ]
 
 [[package]]
+name = "py-cpuinfo"
+version = "9.0.0"
+description = "Get CPU info with pure Python"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "py-cpuinfo-9.0.0.tar.gz", hash = "sha256:3cdbbf3fac90dc6f118bfd64384f309edeadd902d7c8fb17f02ffa1fc3f49690"},
+    {file = "py_cpuinfo-9.0.0-py3-none-any.whl", hash = "sha256:859625bc251f64e21f077d099d4162689c762b5d6a4c3c97553d56241c9674d5"},
+]
+
+[[package]]
 name = "python-decouple"
 version = "3.7"
 description = "Strict separation of settings from code."
@@ -372,4 +384,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "3.6.5"
-content-hash = "0479e53928f2b2dfd7866aaf6a233328061dda2ebd8682bd8fa3d5ce1972df0f"
+content-hash = "128ca434bd718367a1dd329c184959df636865f35512d2fcc67d45a936f8c93f"

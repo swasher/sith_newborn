@@ -22,6 +22,7 @@ currencylayer = {git = "https://github.com/Said007/currencylayer"}
 beautifulsoup4 = "4.5.1"
 humanfriendly = "2.1"
 pytz = "2016.7"
+py-cpuinfo = "^9.0.0"
 
 
 [build-system]

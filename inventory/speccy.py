@@ -35,13 +35,30 @@ def parse_speccy(speccy_xml):
         feature['Процессор'] = leaf.xpath('entry[@title="Name"]')[0].get('value')
         feature['Количество ядер'] = leaf.xpath('entry[@title="Cores"]')[0].get('value')
         feature['Количество потоков'] = leaf.xpath('entry[@title="Threads"]')[0].get('value')
-        feature['Архитектура'] = leaf.xpath('entry[@title="Code Name"]')[0].get('value')
+        try:
+            feature['Архитектура'] = leaf.xpath('entry[@title="Code Name"]')[0].get('value')
+        except IndexError:
+            feature['Архитектура'] = 'Speccy Unknown'
+
         try:
             feature['Сокет'] = leaf.xpath('entry[@title="Package"]')[0].get('value')
-        except IndexError: feature['Сокет'] = 'Unknown'
-        feature['Литография'] = leaf.xpath('entry[@title="Technology"]')[0].get('value')
-        feature['Ревизия'] = leaf.xpath('entry[@title="Revision"]')[0].get('value')
-        feature['Базовая тактовая частота процессора'] = leaf.xpath('entry[@title="Stock Core Speed"]')[0].get('value')
+        except IndexError:
+            feature['Сокет'] = 'Speccy Unknown'
+
+        try:
+            feature['Литография'] = leaf.xpath('entry[@title="Technology"]')[0].get('value')
+        except IndexError:
+            feature['Литография'] = 'Speccy Unknown'
+
+        try:
+            feature['Ревизия'] = leaf.xpath('entry[@title="Revision"]')[0].get('value')
+        except IndexError:
+            feature['Ревизия'] = 'Speccy Unknown'
+
+        try:
+            feature['Базовая тактовая частота процессора'] = leaf.xpath('entry[@title="Stock Core Speed"]')[0].get('value')
+        except IndexError:
+            feature['Базовая тактовая частота процессора'] = 'Speccy Unknown'
 
         device = dict()
         device['type'] = 'cpu'
@@ -55,18 +72,27 @@ def parse_speccy(speccy_xml):
     feature = dict()
     feature['Бренд'] = tree.xpath('/speccydata/mainsection[@title="Motherboard"]/entry[@title="Manufacturer"]')[0].get('value')
     feature['Модель'] = tree.xpath('/speccydata/mainsection[@title="Motherboard"]/entry[@title="Model"]')[0].get('value')
+
     try:
         feature['Чипсет, вендор'] = tree.xpath('/speccydata/mainsection[@title="Motherboard"]/entry[@title="Chipset Vendor"]')[0].get('value')
-    except IndexError: feature['Чипсет, вендор'] = 'Unknown'
+    except IndexError:
+        feature['Чипсет, вендор'] = 'Speccy Unknown'
+
     try:
         feature['Чипсет, модель'] = tree.xpath('/speccydata/mainsection[@title="Motherboard"]/entry[@title="Chipset Model"]')[0].get('value')
-    except IndexError: feature['Чипсет, модель'] = 'Unknown'
+    except IndexError:
+        feature['Чипсет, модель'] = 'Speccy Unknown'
+
     try:
         feature['Память, тип'] = tree.xpath('/speccydata/mainsection[@title="RAM"]/section[@title="Memory"]/entry[@title="Type"]')[0].get('value')
-    except IndexError: feature['Память, тип'] = 'Unknown'
+    except IndexError:
+        feature['Память, тип'] = 'Speccy Unknown'
+
     try:
         feature['Память, кол-во слотов'] = tree.xpath('/speccydata/mainsection[@title="RAM"]/section[@title="Memory slots"]/entry[@title="Total memory slots"]')[0].get('value')
-    except IndexError: feature['Память, кол-во слотов'] = 'Unknown'
+    except IndexError:
+        feature['Память, кол-во слотов'] = 'Speccy Unknown'
+
     feature['Биос, вендор'] = tree.xpath('/speccydata/mainsection[@title="Motherboard"]/section[@title="BIOS"]/entry[@title="Brand"]')[0].get('value')
     feature['Биос, дата'] = tree.xpath('/speccydata/mainsection[@title="Motherboard"]/section[@title="BIOS"]/entry[@title="Date"]')[0].get('value')
 
@@ -97,15 +123,18 @@ def parse_speccy(speccy_xml):
         feature['Частота'] = leaf.xpath('entry[@title="Max Bandwidth"]')[0].get('value')
         try:
             feature['Серия (Part Number)'] = leaf.xpath('entry[@title="Part Number"]')[0].get('value')
-        except IndexError: pass
+        except IndexError:
+            feature['Серия (Part Number)'] = 'Speccy Unknown'
 
         try:
             feature['Серийный номер'] = leaf.xpath('entry[@title="Serial Number"]')[0].get('value')
-        except IndexError: pass
+        except IndexError:
+            feature['Серийный номер'] = 'Speccy Unknown'
 
         try:
             feature['Изготовлено (Week-year)'] = leaf.xpath('entry[@title="Week/year"]')[0].get('value')
-        except IndexError: pass
+        except IndexError:
+            feature['Изготовлено (Week-year)'] = 'Speccy Unknown'
 
         device = dict()
         device['type'] = 'memory'
@@ -127,9 +156,12 @@ def parse_speccy(speccy_xml):
             feature = dict()
             model_on_videocard = leaf.xpath('entry[@title="Name"]')[0].get('value')
             model_match = re.match(r'(.*)\son\s', model_on_videocard)
+
             try:
                 feature['Модель'] = model_match.group(1)
-            except AttributeError: pass
+            except AttributeError:
+                feature['Модель'] = 'Speccy Unknown'
+
             feature['Нативное разрешение'] = leaf.xpath('entry[@title="Current Resolution"]')[0].get('value')
             device = dict()
             device['type'] = 'monitor'
@@ -167,24 +199,27 @@ def parse_speccy(speccy_xml):
 
         try:
             feature['Дата выпуска'] = tree.xpath('/speccydata/mainsection[@title="Graphics"]/section/entry[@title="Release Date"]')[0].get('value')
-        except IndexError: pass
+        except IndexError:
+            feature['Дата выпуска'] = 'Speccy Unknown'
 
         try:
             feature['Объем памяти'] = tree.xpath('/speccydata/mainsection[@title="Graphics"]/section/entry[@title="Memory"]')[0].get('value')
         except:
-            feature['Объем памяти'] = ''
+            feature['Объем памяти'] = 'Speccy Unknown'
         try:
             feature['Объем памяти'] = tree.xpath('/speccydata/mainsection[@title="Graphics"]/section/entry[@title="Physical Memory"]')[0].get('value')
         except:
-            feature['Объем памяти'] = ''
+            feature['Объем памяти'] = 'Speccy Unknown'
 
         try:
             feature['GPU'] = tree.xpath('/speccydata/mainsection[@title="Graphics"]/section/entry[@title="GPU"]')[0].get('value')
-        except IndexError: pass
+        except IndexError:
+            feature['GPU'] = 'Speccy Unknown'
 
         try:
             feature['Литография'] = tree.xpath('/speccydata/mainsection[@title="Graphics"]/section/entry[@title="Technology"]')[0].get('value')
-        except IndexError: pass
+        except IndexError:
+            feature['Литография'] = 'Speccy Unknown'
 
         device = dict()
         device['type'] = 'videocard'
@@ -205,38 +240,45 @@ def parse_speccy(speccy_xml):
         try:
             feature['Бренд'] = leaf.xpath('entry[@title="Manufacturer"]')[0].get('value')
         except (KeyError, IndexError):
-            feature['Бренд'] = ''
+            feature['Бренд'] = 'Speccy Unknown'
 
         try:
             features = leaf.xpath('entry[@title="Features"]')[0].get('value')
         except:
-            feature['Тип носителя'] = ''
+            feature['Тип носителя'] = 'Speccy Unknown'
         else:
             if 'SSD' in features:
                 feature['Тип носителя'] = 'SSD'
             else:
                 feature['Тип носителя'] = 'HDD'
 
-        feature['Серийный номер'] = leaf.xpath('entry[@title="Serial Number"]')[0].get('value')
-        #feature['Интерфейс'] = leaf.xpath('entry[@title="Interface"]')[0].get('value')
+        try:
+            feature['Серийный номер'] = leaf.xpath('entry[@title="Serial Number"]')[0].get('value')
+        except IndexError:
+            feature['Серийный номер'] = 'Speccy Unknown'
+
         interface = leaf.xpath('entry[@title="Interface"]')[0].get('value')
         feature['Интерфейс'] = 'IDE' if interface=='ATA' else interface
+
         try:
             feature['Ревизия SATA'] = leaf.xpath('entry[@title="SATA type"]')[0].get('value')
         except IndexError:
-            pass
+            feature['Ревизия SATA'] = 'Speccy Unknown'
+
         try:
             feature['Стандарт ATA'] = leaf.xpath('entry[@title="ATA Standard"]')[0].get('value')
         except IndexError:
-            pass
+            feature['Стандарт ATA'] = 'Speccy Unknown'
+
         try:
             feature['Форм-фактор'] = leaf.xpath('entry[@title="Form Factor"]')[0].get('value')
         except IndexError:
-            pass
+            feature['Форм-фактор'] = 'Speccy Unknown'
+
         try:
             feature['Шпиндель (RPM-class)'] = leaf.xpath('entry[@title="Speed"]')[0].get('value')
         except IndexError:
-            pass
+            feature['Шпиндель (RPM-class)'] = 'Speccy Unknown'
 
         real_size = leaf.xpath('entry[@title="Real size"]')[0].get('value') #.replace(" ", "")
 
